@@ -2,7 +2,9 @@ var express = require("express");
 var app = express();
 var PORT = 8080; // default port 8080
 
-
+function generateRandomString() {
+  return Math.random().toString(36).replace('0.', '');
+}
 
 app.set("view engine", "ejs");
 
@@ -36,8 +38,9 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  let shortURL = generateRandomString(req.body);
+  let longURL = req.body.longURL
+  res.send(shortURL);
 });
 
 app.get("/urls/:id", (req, res) => {
