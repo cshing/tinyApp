@@ -16,9 +16,13 @@
   <ul>
     <% for (const key in urls) { %>
     <li><%= key %> : <%= urls[key] %>
+      <form method="POST" action="/urls/<%= key %>/edit">
+        <button>Edit</button>
+      </form>
+
       <form method="POST" action="/urls/<%= key %>/delete">
-      <button>Delete!</button>
-     </form>
+        <button>Delete!</button>
+      </form>
     </li>
     <% } %>
   </ul>

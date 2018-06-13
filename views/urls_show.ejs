@@ -13,6 +13,14 @@
 
 <main>
     <p><%= shortURL %> : <%= longURL %></p>
+
+    <form action="/urls/<%= shortURL %>/edit" method="POST" style="margin:150px;">
+     <label for="editLongURL">ShortURL: <b><%= shortURL %></b></label>
+      <br><input id="editLongURL" type="text" name="longURL" placeholder="<%= longURL %>" style="width: 300px">
+     <input type="submit" value="Update!">
+    </form>
+
+
 </main>
 
 </body>
