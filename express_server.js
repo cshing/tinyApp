@@ -1,6 +1,14 @@
-var express = require("express");
-var app = express();
-var PORT = 8080;
+const express = require("express");
+const bodyParser = require("body-parser");
+const morgan = require("morgan");
+
+const app = express();
+const PORT = 8080;
+
+const urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
 
 function generateRandomString() {
   let randomString = "";
@@ -13,13 +21,8 @@ function generateRandomString() {
 
 app.set("view engine", "ejs");
 
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
 
 app.get("/", (req, res) => {
   res.end("Hello!");
