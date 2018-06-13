@@ -3,7 +3,12 @@ var app = express();
 var PORT = 8080;
 
 function generateRandomString() {
-  return Math.random().toString(36).replace('0.', '').slice(4);
+  let randomString = "";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 6; i++) 
+    randomString += possible.charAt(Math.floor(Math.random() * possible.length));
+  
+  return randomString;
 }
 
 app.set("view engine", "ejs");
@@ -45,11 +50,15 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls")
 });
 
+app.get("/urls/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, 
                        longURL: urlDatabase[req.params.id]
-                     };
-          
+                     };      
   res.render("urls_show", templateVars);
 });
 
