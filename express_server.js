@@ -49,15 +49,15 @@ app.post("/urls", (req, res) => {
   // console.log(req.body);  // debug statement to see POST parameters
   // res.send("Ok");         // Respond with 'Ok' (we will replace this)
   
-  let shortURL = generateRandomString();
-  let longURL = req.body.longURL
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL
 
   urlDatabase[shortURL] = longURL //add key-value pairs to database
   res.redirect("/urls")
 });
 
-  app.get("/u/:shortURL", (req, res) => {
-    let longURL = urlDatabase[req.params.shortURL];
+  app.get("/u/:id", (req, res) => {
+    const longURL = urlDatabase[req.params.id];
     res.redirect(longURL);
   });
 
