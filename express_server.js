@@ -56,10 +56,10 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls")
 });
 
-app.get("/urls/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
-});
+  app.get("/u/:shortURL", (req, res) => {
+    let longURL = urlDatabase[req.params.shortURL];
+    res.redirect(longURL);
+  });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { 
