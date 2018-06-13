@@ -1,9 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+const cookieParser = require('cookie-parser')
 
 const app = express();
 const PORT = 8080;
+
+app.set("view engine", "ejs");
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser())
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -17,12 +23,7 @@ function generateRandomString() {
     randomString += possible.charAt(Math.floor(Math.random() * possible.length));
   
   return randomString;
-}
-
-app.set("view engine", "ejs");
-
-app.use(bodyParser.urlencoded({extended: true}));
-
+};
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -56,10 +57,10 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls")
 });
 
-  app.get("/u/:id", (req, res) => {
+app.get("/u/:id", (req, res) => {
     const longURL = urlDatabase[req.params.id];
     res.redirect(longURL);
-  });
+});
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { 
