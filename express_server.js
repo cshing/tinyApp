@@ -2,6 +2,8 @@ var express = require("express");
 var app = express();
 var PORT = 8080; // default port 8080
 
+
+
 app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
@@ -31,6 +33,11 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // debug statement to see POST parameters
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
 app.get("/urls/:id", (req, res) => {
