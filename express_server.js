@@ -118,35 +118,24 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
-// app.post("/login", (req, res) => {
-//   const userID = `user${generateRandomString()}RandomID`
-//   const email = req.body.email;
-//   const password = req.body.password;
-
-// // Handle errors
-//   let valid = validateData(req.body)
-//   if (valid) {
-//     users[userID] = {
-//       id: userID,
-//       email: email,
-//       password: password
-//     } 
-//     res.cookie("userID", users[userID].id);
-//     res.redirect("/urls");
-//   } else {
-//       res.status(400).send("Opps, something went wrong...");
-//       return;
-//     } 
-// });
-
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect("/urls")
+  const email = req.body.email;
+  const password = req.body.password;
+
+  for (let userID in users) {
+    if (email === users[userID].email) {
+      if (password === users[userID].password) {
+        res.cookie("userID", users[userID].id);
+        res.redirect("/");
+      }  
+    }
+  }
+  res.status(403).send("403: User not found or wrong password")
 });
 
 // Log-out
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('userID');
   res.redirect("/urls")
 });
 
@@ -189,7 +178,7 @@ app.post("/register", (req, res) => {
     res.cookie("userID", users[userID].id);
     res.redirect("/urls");
   } else {
-      res.status(400).send("Opps, something went wrong...");
+      res.status(400).send("400: Opps, something went wrong...");
       return;
     } 
 });
