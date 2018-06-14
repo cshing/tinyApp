@@ -110,6 +110,35 @@ app.post("/urls/:id/edit", (req, res) => {
 });
 
 //Log-in
+app.get("/login", (req, res) => {
+  let templateVars = { 
+    //username: req.cookies["username"],
+    user: users[req.cookies[users.userID]]
+  };
+  res.render("login", templateVars);
+});
+
+// app.post("/login", (req, res) => {
+//   const userID = `user${generateRandomString()}RandomID`
+//   const email = req.body.email;
+//   const password = req.body.password;
+
+// // Handle errors
+//   let valid = validateData(req.body)
+//   if (valid) {
+//     users[userID] = {
+//       id: userID,
+//       email: email,
+//       password: password
+//     } 
+//     res.cookie("userID", users[userID].id);
+//     res.redirect("/urls");
+//   } else {
+//       res.status(400).send("Opps, something went wrong...");
+//       return;
+//     } 
+// });
+
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect("/urls")
@@ -121,7 +150,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls")
 });
 
-
+//function to validate registration 
 function validateData(data) {
   if (data.email && data.email.length > 0 && data.password && data.password.length > 0) {
     for (let userID in users) {
@@ -149,7 +178,7 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  // Handle registration errors
+// Handle registration errors
   let valid = validateData(req.body)
   if (valid) {
     users[userID] = {
