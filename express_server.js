@@ -91,11 +91,13 @@ app.post("/urls/:id/edit", (req, res) => {
   res.redirect("/urls")
 });
 
+//Log-in
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect("/urls")
 });
 
+// Log-out
 app.post("/logout", (req, res) => {
   res.clearCookie('username');
   res.redirect("/urls")
