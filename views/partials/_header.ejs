@@ -16,8 +16,12 @@
     <% } else {%>
     <form method="POST" action="/login">
      <label for="username">Name:</label>
-      <input id="username" type="text" name="username">
+      <input id="username" type="text" name="username"><br>
      <input type="submit" value="Sign in">  
+    </form> 
+    
+    <form method="GET" action="/register">
+      <input type="submit" value="Register">  
     </form> 
    
     <% } %>
