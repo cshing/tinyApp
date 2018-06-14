@@ -21,15 +21,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-function generateRandomString() {
-  let randomString = "";
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 6; i++) 
-    randomString += possible.charAt(Math.floor(Math.random() * possible.length));
-  
-  return randomString;
-};
-
 const users = { 
   "userRandomID": {
     id: "userRandomID", 
@@ -41,7 +32,17 @@ const users = {
     email: "user2@example.com", 
     password: "dishwasher-funk"
   }
-}
+};
+
+function generateRandomString() {
+  let randomString = "";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 6; i++) 
+    randomString += possible.charAt(Math.floor(Math.random() * possible.length));
+  
+  return randomString;
+};
+
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -140,7 +141,17 @@ app.get("/register", (req, res) => {
 
 // Registration page (rgister,ejs)
 app.post("/register", (req, res) => {
-  // add somethign later
+  const userID = `user${generateRandomString()}RandomID`
+  const email = req.body.email;
+  const password = req.body.password;
+
+  users[userID] = {
+    id: userID,
+    email: email,
+    password: password
+  };
+
+  res.cookie("userID", userID)
   res.redirect("/urls")
 });
 
