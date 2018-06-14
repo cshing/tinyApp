@@ -8,6 +8,7 @@ const PORT = 8080;
 
 app.set("view engine", "ejs");
 
+app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 
@@ -103,10 +104,28 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls")
 });
 
+// app.post("/register", (req, res) => {
+//   // res.send("ok")
+//   const email = req.body.email;
+//   const password = req.body.password;
+
+//   // res.json({email, password})
+//   res.render("/register");
+// })
+
+// Register button in _header
 app.get("/register", (req, res) => {
-  res.send("ok")
-  // res.render("urls_new", templateVars);
-})
+  let templateVars = { 
+    username: req.cookies["username"]
+  };
+  res.render("register", templateVars);
+});
+
+// Registration page (rgister,ejs)
+app.post("/register", (req, res) => {
+  // add somethign later
+  res.redirect("/urls")
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
