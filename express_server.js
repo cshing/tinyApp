@@ -59,6 +59,7 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = { 
     username: req.cookies["username"],
+    userID: req.cookies["userID"],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -66,7 +67,8 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = { 
-    username: req.cookies["username"]
+    username: req.cookies["username"],
+    userID: req.cookies["userID"]
   };
   res.render("urls_new", templateVars);
 });
@@ -90,6 +92,7 @@ app.get("/u/:id", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = { 
     username: req.cookies["username"],
+    userID: req.cookies["userID"],
     shortURL: req.params.id, 
     longURL: urlDatabase[req.params.id]
   };      
@@ -98,15 +101,11 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
-  // res.send("ok")  // to check if can get to /urls/:id/delete
   res.redirect("/urls")
 });
 
 app.post("/urls/:id/edit", (req, res) => {
-  // console.log(urlDatabase[req.params.id]);
-  // console.log(req.body.longURL);
   urlDatabase[req.params.id] = req.body.longURL;
-  // res.send("ok");  // to check if can get to /urls/:id/edit
   res.redirect("/urls")
 });
 
@@ -122,19 +121,24 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls")
 });
 
-// app.post("/register", (req, res) => {
-//   // res.send("ok")
-//   const email = req.body.email;
-//   const password = req.body.password;
 
-//   // res.json({email, password})
-//   res.render("/register");
-// })
+function validateData(data) {
+  if (data.email && data.email.length > 0 && data.password && data.password.length > 0) {
+    for (let userID in users) {
+      if (data.email === users[userID].email) {
+        return false;
+      }
+      return true;
+    }
+  return false;
+  }
+}
 
 // Register button in _header
 app.get("/register", (req, res) => {
   let templateVars = { 
-    username: req.cookies["username"]
+    username: req.cookies["username"],
+    userID: req.cookies["userID"]
   };
   res.render("register", templateVars);
 });
@@ -145,13 +149,18 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  users[userID] = {
-    id: userID,
-    email: email,
-    password: password
-  };
-
-  res.cookie("userID", userID)
-  res.redirect("/urls")
+  // Handle registration errors
+  let valid = validateData(req.body)
+  if (valid) {
+    users[userID] = {
+      id: userID,
+      email: email,
+      password: password
+    } 
+    res.cookie("userID", users[userID].id);
+    res.redirect("/urls");
+  } else {
+      res.status(400).send("Opps, something went wrong...");
+      return;
+    } 
 });
-
