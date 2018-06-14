@@ -58,8 +58,8 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = { 
-    username: req.cookies["username"],
-    userID: req.cookies["userID"],
+    //username: req.cookies["username"],
+    user: users[req.cookies[users.userID]],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -67,8 +67,8 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = { 
-    username: req.cookies["username"],
-    userID: req.cookies["userID"]
+    //username: req.cookies["username"],
+    user: users[req.cookies[users.userID]],
   };
   res.render("urls_new", templateVars);
 });
@@ -91,8 +91,8 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { 
-    username: req.cookies["username"],
-    userID: req.cookies["userID"],
+    //username: req.cookies["username"],
+    user: users[req.cookies[users.userID]],
     shortURL: req.params.id, 
     longURL: urlDatabase[req.params.id]
   };      
@@ -137,8 +137,8 @@ function validateData(data) {
 // Register button in _header
 app.get("/register", (req, res) => {
   let templateVars = { 
-    username: req.cookies["username"],
-    userID: req.cookies["userID"]
+    //username: req.cookies["username"],
+    user: users[req.cookies[users.userID]]
   };
   res.render("register", templateVars);
 });
