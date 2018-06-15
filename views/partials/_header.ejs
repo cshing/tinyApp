@@ -7,21 +7,16 @@
     <h1>TinyApp</h1>
 
     <% if (user) { %>
-    <p>Logged in as: <%= user %></p>
+    <p>You are logged in.</p>
     
     <form method="POST" action="/logout">
       <input type="submit" value="Logout">  
     </form>
-   
-    <% } else {%>
 
-    <form method="GET" action="/login">
-      <input type="submit" value="Login">  
-    </form> 
+    <% } else {%>
     
-    <form method="GET" action="/register">
-      <input type="submit" value="Register">  
-    </form> 
+    <a href="/login"><button>Login</button></a>
+    <a href="/register"><button>Register</button></a>
 
     <% } %>
    

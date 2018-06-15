@@ -57,18 +57,20 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  const userID = req.cookies.user_ID;
   let templateVars = { 
     //username: req.cookies["username"],
-    user: users[req.cookies[users.userID]],
+    user: users[userID],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  const userID = req.cookies.user_ID;
   let templateVars = { 
     //username: req.cookies["username"],
-    user: users[req.cookies[users.userID]],
+    user: users[userID],
   };
   res.render("urls_new", templateVars);
 });
@@ -90,9 +92,10 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  const userID = req.cookies.user_ID;
   let templateVars = { 
     //username: req.cookies["username"],
-    user: users[req.cookies[users.userID]],
+    user: users[userID],
     shortURL: req.params.id, 
     longURL: urlDatabase[req.params.id]
   };      
@@ -109,35 +112,6 @@ app.post("/urls/:id/edit", (req, res) => {
   res.redirect("/urls")
 });
 
-//Log-in
-app.get("/login", (req, res) => {
-  let templateVars = { 
-    //username: req.cookies["username"],
-    user: users[req.cookies[users.userID]]
-  };
-  res.render("login", templateVars);
-});
-
-app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-
-  for (let userID in users) {
-    if (email === users[userID].email) {
-      if (password === users[userID].password) {
-        res.cookie("userID", users[userID].id);
-        res.redirect("/");
-      }  
-    }
-  }
-  res.status(403).send("403: User not found or wrong password")
-});
-
-// Log-out
-app.post("/logout", (req, res) => {
-  res.clearCookie('userID');
-  res.redirect("/urls")
-});
 
 //function to validate registration 
 function validateData(data) {
@@ -154,31 +128,73 @@ function validateData(data) {
 
 // Register button in _header
 app.get("/register", (req, res) => {
-  let templateVars = { 
-    //username: req.cookies["username"],
-    user: users[req.cookies[users.userID]]
-  };
-  res.render("register", templateVars);
+  res.render("register");
 });
 
 // Registration page (rgister,ejs)
 app.post("/register", (req, res) => {
   const userID = `user${generateRandomString()}RandomID`
-  const email = req.body.email;
-  const password = req.body.password;
+  const registerEmail = req.body.email;
+  const registerPassword = req.body.password;
 
 // Handle registration errors
-  let valid = validateData(req.body)
+  const valid = validateData(req.body)
   if (valid) {
     users[userID] = {
       id: userID,
-      email: email,
-      password: password
+      email: registerEmail,
+      password: registerPassword
     } 
-    res.cookie("userID", users[userID].id);
+    res.cookie("user_ID", users[userID].id);
     res.redirect("/urls");
   } else {
       res.status(400).send("400: Opps, something went wrong...");
-      return;
     } 
+});
+
+//Log-in
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+function authenticateUser(email, password) {
+  for (let userID in users) {
+    if (users[userID].email === email) {
+      if (users[userID].password === password) {
+        return users[userID];
+      }
+    }
+  }
+}
+
+app.post("/login", (req, res) => {
+  const loginEmail = req.body.email;
+  const loginPassword = req.body.password;
+
+  let result = authenticateUser (loginEmail, loginPassword);
+  if(result) {
+    res.cookie("user_ID", result.id);
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("403: User not found or wrong password")
+  }
+});
+
+//   for (let userID in users) {
+//     if (email === users[userID].email) {
+//       if (password === users[userID].password) {
+//         res.cookie("userID", users[userID].id);
+//         res.redirect("/urls");
+//         return;
+//       }
+//       return;
+//     }
+//   }
+  
+// });
+
+// Log-out
+app.post("/logout", (req, res) => {
+  res.clearCookie('user_ID');
+  res.redirect("/urls")
 });
