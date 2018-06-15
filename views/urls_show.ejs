@@ -12,11 +12,11 @@
 </header>
 
 <main>
-    <p><%= shortURL %> : <%= longURL %></p>
+    <p><%= shortURL %> : <%= urls[shortURL].url %></p>
 
     <form action="/urls/<%= shortURL %>/edit" method="POST" style="margin:150px;">
      <label for="editLongURL">ShortURL: <b><%= shortURL %></b></label>
-      <br><input id="editLongURL" type="text" name="longURL" placeholder="<%= longURL %>" style="width: 300px">
+      <br><input id="editLongURL" type="text" name="longURL" placeholder="<%= urls[shortURL].url %>" style="width: 300px">
      <input type="submit" value="Update!">
     </form>
 
