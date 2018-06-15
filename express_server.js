@@ -113,7 +113,6 @@ app.get("/u/:id", (req, res) => {
     res.redirect(longURL)
 });
 
-//to fix deadlink when want to edit others' urls
 function checkCorrectURL (short, userID) {
   console.log(short)
   for (const shortURL in urlDatabase) {
@@ -176,10 +175,10 @@ function validateData(data) {
       if (data.email === users[userID].email) {
         return false;
       }
-      return true;
     }
-  return false;
+    return true;
   }
+  return false;
 }
 
 // Register button in _header
