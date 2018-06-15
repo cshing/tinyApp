@@ -109,9 +109,8 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-    //const longURL = urlDatabase[req.params.id].url;
-    const longURL = urlDatabase[req.params.userID][url];
-    res.redirect(longURL);
+    const longURL = urlDatabase[req.params.id].url
+    res.redirect(longURL)
 });
 
 app.get("/urls/:id", (req, res) => {
