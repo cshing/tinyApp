@@ -96,13 +96,15 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  // console.log(req.body);  // debug statement to see POST parameters
-  // res.send("Ok");         // Respond with 'Ok' (we will replace this)
-  
   const shortURL = generateRandomString();
-  const longURL = req.body.longURL
+  const longURL = req.body.longURL;
 
-  urlDatabase[shortURL].url = longURL //add key-value pairs to database
+  let newURL = {
+    url: longURL,
+    userID: req.cookies.user_ID
+  }
+
+  urlDatabase[shortURL]= newURL; //add key-value pairs to database
   res.redirect("/urls")
 });
 
