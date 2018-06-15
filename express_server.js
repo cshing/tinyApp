@@ -113,21 +113,38 @@ app.get("/u/:id", (req, res) => {
     res.redirect(longURL)
 });
 
+//to fix deadlink when want to edit others' urls
+function checkCorrectURL (short, userID) {
+  console.log(short)
+  for (const shortURL in urlDatabase) {
+    if (short === shortURL && userID === urlDatabase[shortURL].userID) {
+      return true;
+    }
+  }
+  return false;
+}
+
 app.get("/urls/:id", (req, res) => {
   const userID = req.cookies.user_ID;
-  let templateVars = {
-    user: users[userID],
-    urls: urlsForUser(userID),
-    shortURL: req.params.id, 
-    longURL: urlDatabase[req.params.id]
-  };
+  const shortURL = req.params.id;
+  const correct = checkCorrectURL(shortURL, userID)
+
   if(!userID) {
     res.redirect("/login");
-  } else {
-  res.render("urls_show", templateVars);
+    return;
   }
+  if(correct) {
+    let templateVars = {
+      user: users[userID],
+      shortURL: req.params.id, 
+      longURL: urlDatabase[req.params.id].url
+    };
+    res.render("urls_show", templateVars);
+    // res.send("ok")
+  } else {
+    res.send("Sorry, the short URL is wrong!")
+  } 
 });
-
 
 app.post("/urls/:id/delete", (req, res) => {
   const userID = req.cookies.user_ID;
@@ -138,11 +155,6 @@ app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls")
   }
-});
-
-//to fix deadlink when want to edit others' urls
-app.get("/urls/:id/edit", (req, res) => {
-  res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id/edit", (req, res) => {
