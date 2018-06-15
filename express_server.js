@@ -72,7 +72,12 @@ app.get("/urls/new", (req, res) => {
     //username: req.cookies["username"],
     user: users[userID],
   };
+
+  if(!userID) {
+    res.redirect("/login");
+  } else {
   res.render("urls_new", templateVars);
+  }
 });
 
 app.post("/urls", (req, res) => {
@@ -179,19 +184,6 @@ app.post("/login", (req, res) => {
     res.status(403).send("403: User not found or wrong password")
   }
 });
-
-//   for (let userID in users) {
-//     if (email === users[userID].email) {
-//       if (password === users[userID].password) {
-//         res.cookie("userID", users[userID].id);
-//         res.redirect("/urls");
-//         return;
-//       }
-//       return;
-//     }
-//   }
-  
-// });
 
 // Log-out
 app.post("/logout", (req, res) => {
