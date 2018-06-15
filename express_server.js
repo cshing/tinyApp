@@ -167,8 +167,6 @@ app.post("/urls/:id/edit", (req, res) => {
   }
 });
 
-// to fix registration with just registered acct
-//function to validate registration 
 function validateData(data) {
   if (data.email && data.email.length > 0 && data.password && data.password.length > 0) {
     for (let userID in users) {
