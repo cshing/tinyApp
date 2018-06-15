@@ -1,7 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-// const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session')
 const bcrypt = require('bcryptjs');
 
@@ -12,7 +11,6 @@ app.set("view engine", "ejs");
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(cookieParser())
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
@@ -22,6 +20,7 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+// Url Database
 const urlDatabase = {
   "b2xVn2": {
     url: "http://www.lighthouselabs.ca",
@@ -33,6 +32,7 @@ const urlDatabase = {
   }
 };
 
+// User Database
 const users = { 
   "userRandomID": {
     id: "userRandomID", 
@@ -46,6 +46,7 @@ const users = {
   }
 };
 
+// Function to generate 6 digit random userID
 function generateRandomString() {
   let randomString = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -55,7 +56,7 @@ function generateRandomString() {
   return randomString;
 };
 
-
+// Practice
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
@@ -68,6 +69,7 @@ app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+// Function to add shortURL/:id to the right user
 function urlsForUser(userID) {
   const userURLs = {}
   for (let shortURL in urlDatabase) {
@@ -120,6 +122,7 @@ app.get("/u/:id", (req, res) => {
     res.redirect(longURL)
 });
 
+// Function to check is shortURL belongs to user's own database
 function checkCorrectURL (short, userID) {
   console.log(short)
   for (const shortURL in urlDatabase) {
@@ -146,7 +149,6 @@ app.get("/urls/:id", (req, res) => {
       longURL: urlDatabase[req.params.id].url
     };
     res.render("urls_show", templateVars);
-    // res.send("ok")
   } else {
     res.send("Sorry, your shortened URL is wrong!")
   } 
@@ -174,6 +176,7 @@ app.post("/urls/:id/edit", (req, res) => {
   }
 });
 
+// Function to check is registration email/password are valid and if it's been registered before
 function validateData(data) {
   if (data.email && data.email.length > 0 && data.password && data.password.length > 0) {
     for (let userID in users) {
@@ -201,12 +204,12 @@ app.post("/register", (req, res) => {
 // Handle registration errors
   const valid = validateData(req.body)
   if (valid) {
-    users[userID] = {
+      users[userID] = {
       id: userID,
       email: registerEmail,
       password: hashedPassword
     } 
-    // res.cookie("user_ID", users[userID].id);
+
     req.session.user_ID = users[userID].id;
     res.redirect("/urls");
   } else {
@@ -214,39 +217,60 @@ app.post("/register", (req, res) => {
     } 
 });
 
-//Log-in
+//Log-in page
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
-function authenticateUser(email, password) {
-  for (let userID in users) {
-    if (users[userID].email === email) {
-      if (bcrypt.compareSync(password, users[userID].password)) {
-      // if (users[userID].password === password) {
-        return users[userID];
-      }
+// Function to check if if login email/password are valid
+// function authenticateUser(email, password) {
+//   for (let userID in users) {
+//     if (users[userID].email === email) {
+//       if (bcrypt.compareSync(password, users[userID].password)) {
+//         // return users[userID];
+//         return true;
+//       }
+//     }
+//   }
+//   return false;
+// }
+function getUserByEmail (email) {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return users[user];
     }
   }
+  return null;
 }
 
 app.post("/login", (req, res) => {
   const loginEmail = req.body.email;
   const loginPassword = req.body.password;
+  const loginUser = getUserByEmail(loginEmail)
 
-  let result = authenticateUser (loginEmail, loginPassword);
-  if(result) {
-    // res.cookie("user_ID", result.id);
-    req.session.user_ID = users[user].id;
-    res.redirect("/urls");
+  if (loginUser) {
+    if (bcrypt.compareSync(loginPassword, loginUser.password)){
+      req.session.user_ID = loginUser.id;
+      res.redirect("/urls");
+    } else {
+      res.status(403).send("403: Password is incorrect")
+    }
   } else {
-    res.status(403).send("403: User not found or wrong password")
+    res.status(403).send("403: User not registered")
   }
 });
 
+//   let result = authenticateUser (loginEmail, loginPassword);
+//   if(result) {
+//     req.session.user_ID = userID;
+//     res.redirect("/urls");
+//   } else {
+//     res.status(403).send("403: User not found or wrong password")
+//   }
+// });
+
 // Log-out
 app.post("/logout", (req, res) => {
-  // res.clearCookie('user_ID');
   req.session = null;
   res.redirect("/urls")
 });
