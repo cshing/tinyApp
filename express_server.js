@@ -109,7 +109,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-    const longURL = urlDatabase[req.params.id].url
+    const longURL = urlDatabase[req.params.id].url;
     res.redirect(longURL)
 });
 
@@ -140,6 +140,11 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 });
 
+//to fix deadlink when want to edit others' urls
+app.get("/urls/:id/edit", (req, res) => {
+  res.render("urls_show", templateVars);
+});
+
 app.post("/urls/:id/edit", (req, res) => {
   const userID = req.cookies.user_ID;
 
@@ -151,7 +156,7 @@ app.post("/urls/:id/edit", (req, res) => {
   }
 });
 
-
+// to fix registration with just registered acct
 //function to validate registration 
 function validateData(data) {
   if (data.email && data.email.length > 0 && data.password && data.password.length > 0) {
