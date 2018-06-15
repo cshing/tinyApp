@@ -1,7 +1,8 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const cookieParser = require('cookie-parser')
+const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = 8080;
@@ -31,12 +32,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 
-    password: "1111"
+    password: bcrypt.hashSync("1111", 10)
   },
  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
-    password: "2222"
+    password: bcrypt.hashSync("2222", 10)
   }
 };
 
@@ -141,7 +142,7 @@ app.get("/urls/:id", (req, res) => {
     res.render("urls_show", templateVars);
     // res.send("ok")
   } else {
-    res.send("Sorry, the short URL is wrong!")
+    res.send("Sorry, your shortened URL is wrong!")
   } 
 });
 
@@ -189,6 +190,7 @@ app.post("/register", (req, res) => {
   const userID = `user${generateRandomString()}RandomID`
   const registerEmail = req.body.email;
   const registerPassword = req.body.password;
+  const hashedPassword = bcrypt.hashSync(registerPassword, 10);
 
 // Handle registration errors
   const valid = validateData(req.body)
@@ -196,7 +198,7 @@ app.post("/register", (req, res) => {
     users[userID] = {
       id: userID,
       email: registerEmail,
-      password: registerPassword
+      password: hashedPassword
     } 
     res.cookie("user_ID", users[userID].id);
     res.redirect("/urls");
@@ -213,7 +215,8 @@ app.get("/login", (req, res) => {
 function authenticateUser(email, password) {
   for (let userID in users) {
     if (users[userID].email === email) {
-      if (users[userID].password === password) {
+      if (bcrypt.compareSync(password, users[userID].password)) {
+      // if (users[userID].password === password) {
         return users[userID];
       }
     }
