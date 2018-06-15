@@ -109,7 +109,8 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-    const longURL = urlDatabase[req.params.id];
+    //const longURL = urlDatabase[req.params.id].url;
+    const longURL = urlDatabase[req.params.userID][url];
     res.redirect(longURL);
 });
 
@@ -121,7 +122,11 @@ app.get("/urls/:id", (req, res) => {
     shortURL: req.params.id, 
     longURL: urlDatabase[req.params.id]
   };
+  if(!userID) {
+    res.redirect("/login");
+  } else {
   res.render("urls_show", templateVars);
+  }
 });
 
 
