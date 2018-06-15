@@ -15,10 +15,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // app.use(cookieParser())
 app.use(cookieSession({
   name: 'session',
-  keys: [/* secret keys */],
-
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  keys: ['key1', 'key2'],
 }))
 
 app.listen(PORT, () => {
@@ -82,16 +79,17 @@ function urlsForUser(userID) {
 }
 
 app.get("/urls", (req, res) => {
-  const userID = req.cookies.user_ID;
+  const userID = req.session.user_ID;
   let templateVars = { 
     user: users[userID],
     urls: urlsForUser(userID)  //urlDatabase 
   };
+
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies.user_ID;
+  const userID = req.session.user_ID;
   let templateVars = { 
     user: users[userID],
     urls: urlsForUser(userID)
@@ -110,7 +108,7 @@ app.post("/urls", (req, res) => {
 
   let newURL = {
     url: longURL,
-    userID: req.cookies.user_ID
+    userID: req.session.user_ID
   }
 
   urlDatabase[shortURL]= newURL; //add key-value pairs to database
@@ -133,7 +131,7 @@ function checkCorrectURL (short, userID) {
 }
 
 app.get("/urls/:id", (req, res) => {
-  const userID = req.cookies.user_ID;
+  const userID = req.session.user_ID;
   const shortURL = req.params.id;
   const correct = checkCorrectURL(shortURL, userID)
 
@@ -155,7 +153,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  const userID = req.cookies.user_ID;
+  const userID = req.session.user_ID;
 
   if(!userID) {
     res.redirect("/login");
@@ -166,7 +164,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls/:id/edit", (req, res) => {
-  const userID = req.cookies.user_ID;
+  const userID = req.session.user_ID;
 
   if(!userID) {
     res.redirect("/login");
@@ -208,7 +206,8 @@ app.post("/register", (req, res) => {
       email: registerEmail,
       password: hashedPassword
     } 
-    res.cookie("user_ID", users[userID].id);
+    // res.cookie("user_ID", users[userID].id);
+    req.session.user_ID = users[userID].id;
     res.redirect("/urls");
   } else {
       res.status(400).send("400: Opps, something went wrong...");
@@ -237,7 +236,8 @@ app.post("/login", (req, res) => {
 
   let result = authenticateUser (loginEmail, loginPassword);
   if(result) {
-    res.cookie("user_ID", result.id);
+    // res.cookie("user_ID", result.id);
+    req.session.user_ID = users[user].id;
     res.redirect("/urls");
   } else {
     res.status(403).send("403: User not found or wrong password")
@@ -246,6 +246,7 @@ app.post("/login", (req, res) => {
 
 // Log-out
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_ID');
+  // res.clearCookie('user_ID');
+  req.session = null;
   res.redirect("/urls")
 });
