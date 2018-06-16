@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
   <title>TinyApp</title>
 </head>
 
@@ -12,11 +14,10 @@
 </header>
 
 <main>
-
   <ul>
     <% for (const shortURL in urls) { %>
-    <li><%= shortURL %> : <%= urls[shortURL].url %>
-      <a href="/urls/<%= shortURL %>">Edit</a>
+    <li><%= shortURL %> : <%= urls[shortURL].url %><br>
+      <a href="/urls/<%= shortURL %>"><button>Edit</button></a>
         <form method="POST" action="/urls/<%= shortURL %>/delete">
           <button>Delete!</button>
         </form>
@@ -25,9 +26,9 @@
   </ul>
 
 
-<a href="/urls/new">Type in your address here to shorten it</a>
- 
+  <a href="/urls/new">Type in your address here to shorten it</a>
 </main>
+
 
 </body>
 

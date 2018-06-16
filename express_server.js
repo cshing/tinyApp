@@ -213,7 +213,7 @@ app.post("/register", (req, res) => {
     req.session.user_ID = users[userID].id;
     res.redirect("/urls");
   } else {
-      res.status(400).send("400: Opps, something went wrong...");
+      res.status(400).send("400: Opps... you are missing email/password or user existed already");
     } 
 });
 
@@ -222,18 +222,7 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 
-// Function to check if if login email/password are valid
-// function authenticateUser(email, password) {
-//   for (let userID in users) {
-//     if (users[userID].email === email) {
-//       if (bcrypt.compareSync(password, users[userID].password)) {
-//         // return users[userID];
-//         return true;
-//       }
-//     }
-//   }
-//   return false;
-// }
+// Function to get userID by checking email
 function getUserByEmail (email) {
   for (let user in users) {
     if (users[user].email === email) {
@@ -259,15 +248,6 @@ app.post("/login", (req, res) => {
     res.status(403).send("403: User not registered")
   }
 });
-
-//   let result = authenticateUser (loginEmail, loginPassword);
-//   if(result) {
-//     req.session.user_ID = userID;
-//     res.redirect("/urls");
-//   } else {
-//     res.status(403).send("403: User not found or wrong password")
-//   }
-// });
 
 // Log-out
 app.post("/logout", (req, res) => {
