@@ -20,6 +20,7 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+
 // Url Database
 const urlDatabase = {
   "b2xVn2": {
@@ -46,6 +47,7 @@ const users = {
   }
 };
 
+
 // Function to generate 6 digit random userID
 function generateRandomString() {
   let randomString = "";
@@ -55,19 +57,6 @@ function generateRandomString() {
   
   return randomString;
 };
-
-// Practice
-app.get("/", (req, res) => {
-  res.end("Hello!");
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
 
 // Function to add shortURL/:id to the right user
 function urlsForUser(userID) {
@@ -80,6 +69,56 @@ function urlsForUser(userID) {
   return userURLs;
 }
 
+// Function to check if shortURL belongs to user's own database
+function checkCorrectURL (short, userID) {
+  console.log(short)
+  for (const shortURL in urlDatabase) {
+    if (short === shortURL && userID === urlDatabase[shortURL].userID) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Function to check if registration email/password are valid and if it's been registered before
+function validateData(data) {
+  if (data.email && data.email.length > 0 && data.password && data.password.length > 0) {
+    for (let userID in users) {
+      if (data.email === users[userID].email) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+// Function to get userID by checking email
+function getUserByEmail (email) {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return users[user];
+    }
+  }
+  return null;
+}
+
+
+// Practices
+app.get("/", (req, res) => {
+  res.end("Hello!");
+});
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+app.get("/hello", (req, res) => {
+  res.end("<html><body>Hello <b>World</b></body></html>\n");
+});
+
+
+// Main page
 app.get("/urls", (req, res) => {
   const userID = req.session.user_ID;
   let templateVars = { 
@@ -90,6 +129,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// If logged-in, show the add new url page
 app.get("/urls/new", (req, res) => {
   const userID = req.session.user_ID;
   let templateVars = { 
@@ -104,6 +144,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// Add new url
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
@@ -117,22 +158,13 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls")
 });
 
+// Use id/shortURL to get redirect to longURL
 app.get("/u/:id", (req, res) => {
     const longURL = urlDatabase[req.params.id].url;
     res.redirect(longURL)
 });
 
-// Function to check is shortURL belongs to user's own database
-function checkCorrectURL (short, userID) {
-  console.log(short)
-  for (const shortURL in urlDatabase) {
-    if (short === shortURL && userID === urlDatabase[shortURL].userID) {
-      return true;
-    }
-  }
-  return false;
-}
-
+// If logged-in and with correct shortURL, show the edit page for that shortURL
 app.get("/urls/:id", (req, res) => {
   const userID = req.session.user_ID;
   const shortURL = req.params.id;
@@ -154,6 +186,7 @@ app.get("/urls/:id", (req, res) => {
   } 
 });
 
+// if logged-in, can delete url by clicking delete button
 app.post("/urls/:id/delete", (req, res) => {
   const userID = req.session.user_ID;
 
@@ -165,6 +198,7 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 });
 
+// if logged-in, can update the url
 app.post("/urls/:id/edit", (req, res) => {
   const userID = req.session.user_ID;
 
@@ -176,25 +210,12 @@ app.post("/urls/:id/edit", (req, res) => {
   }
 });
 
-// Function to check is registration email/password are valid and if it's been registered before
-function validateData(data) {
-  if (data.email && data.email.length > 0 && data.password && data.password.length > 0) {
-    for (let userID in users) {
-      if (data.email === users[userID].email) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return false;
-}
-
 // Register button in _header
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
-// Registration page (rgister,ejs)
+// Registration page (register.ejs)
 app.post("/register", (req, res) => {
   const userID = `user${generateRandomString()}RandomID`
   const registerEmail = req.body.email;
@@ -217,21 +238,12 @@ app.post("/register", (req, res) => {
     } 
 });
 
-//Log-in page
+// Login button in _header
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
-// Function to get userID by checking email
-function getUserByEmail (email) {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return users[user];
-    }
-  }
-  return null;
-}
-
+// Login page
 app.post("/login", (req, res) => {
   const loginEmail = req.body.email;
   const loginPassword = req.body.password;
@@ -249,7 +261,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-// Log-out
+// Log-out button in _header
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls")
